@@ -1,0 +1,2147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Love Story — Online Neon Love</title>
+    <meta name="description" content="Create your beautiful love story website - track memories, chat, and grow your relationship">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        :root {
+            --bg1: #0b0b0f;
+            --bg2: #13021f;
+            --neon-pink: #ff2d95;
+            --neon-gold: #ffd166;
+            --muted: rgba(255,255,255,0.6);
+            --chat-bg: rgba(255,255,255,0.03);
+            --chat-me: linear-gradient(135deg, #ff2d95, #ff6b6b);
+            --chat-them: rgba(255,255,255,0.08);
+            --online: #00d26a;
+            --typing: #ffd166;
+            --task-complete: #00d26a;
+            --task-pending: #ffd166;
+        }
+        
+        html, body {
+            height: 100%;
+            background: linear-gradient(180deg, var(--bg1), var(--bg2));
+            color: #fff;
+            overflow-x: hidden;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Canvas Background */
+        #bgCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Login Page */
+        #loginPage {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .login-container {
+            background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+            max-width: 400px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+        }
+        
+        .login-title {
+            font-size: 32px;
+            color: var(--neon-pink);
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px rgba(255,45,149,0.3);
+            font-weight: 600;
+        }
+        
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .form-label {
+            color: var(--muted);
+            font-size: 14px;
+        }
+        
+        .form-input {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: #fff;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--neon-pink);
+            box-shadow: 0 0 20px rgba(255,45,149,0.2);
+        }
+        
+        .login-btn {
+            background: linear-gradient(90deg, var(--neon-pink), var(--neon-gold));
+            border: none;
+            border-radius: 10px;
+            padding: 14px;
+            color: #111;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255,45,149,0.4);
+        }
+        
+        .couple-select {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        
+        .couple-btn {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px;
+            padding: 8px 16px;
+            color: var(--muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .couple-btn.active {
+            background: var(--neon-pink);
+            color: #111;
+            border-color: var(--neon-pink);
+        }
+
+        /* Main App */
+        #mainApp {
+            display: none;
+            position: relative;
+            z-index: 10;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: linear-gradient(90deg, rgba(0,0,0,0.3), rgba(0,0,0,0.2));
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 22px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .brand h1 {
+            font-size: 18px;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .logout-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: var(--muted);
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        nav {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        nav button {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.15);
+            color: var(--muted);
+            padding: 8px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        
+        nav button.active {
+            color: #fff;
+            box-shadow: 0 6px 30px rgba(255,45,149,0.15);
+            border-color: rgba(255,45,149,0.3);
+        }
+
+        main.container {
+            max-width: 1100px;
+            margin: 28px auto;
+            padding: 20px;
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+
+        .card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+            border-radius: 14px;
+            padding: 22px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        h2.neon {
+            font-size: 26px;
+            color: var(--neon-pink);
+            text-shadow: 0 0 12px rgba(255,45,149,0.2);
+            margin-bottom: 20px;
+        }
+
+        .profiles {
+            display: flex;
+            gap: 18px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .profile {
+            width: 220px;
+            text-align: center;
+        }
+        
+        .profile img {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid rgba(255,255,255,0.1);
+            box-shadow: 0 12px 40px rgba(255,45,149,0.1);
+            cursor: pointer;
+        }
+        
+        .profile img.heartbeat {
+            animation: heartbeat 1.6s infinite;
+        }
+        
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.06); }
+            40% { transform: scale(1); }
+            60% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+        
+        .profile-controls {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        
+        .profile-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: var(--muted);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .btn {
+            background: linear-gradient(90deg, var(--neon-pink), var(--neon-gold));
+            border: none;
+            color: #111;
+            padding: 10px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 5px;
+        }
+
+        .btn.secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+            justify-content: center;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            margin-top: 14px;
+        }
+        
+        .polaroid {
+            background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+            padding: 8px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .polaroid img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        /* Enhanced Chat Styles */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 500px;
+            background: var(--chat-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .chat-header {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background: rgba(0,0,0,0.2);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .chat-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 12px;
+            object-fit: cover;
+        }
+        
+        .chat-partner-info {
+            flex: 1;
+        }
+        
+        .chat-partner-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .chat-status {
+            font-size: 12px;
+            color: var(--muted);
+        }
+        
+        .chat-status.online {
+            color: var(--online);
+        }
+        
+        .chat-status.typing {
+            color: var(--typing);
+        }
+        
+        .chat-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chat-action-btn {
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 18px;
+        }
+        
+        .chat-window {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .message {
+            max-width: 70%;
+            padding: 10px 14px;
+            border-radius: 18px;
+            position: relative;
+            word-wrap: break-word;
+        }
+        
+        .message.me {
+            align-self: flex-end;
+            background: var(--chat-me);
+            color: #111;
+            border-bottom-right-radius: 6px;
+        }
+        
+        .message.them {
+            align-self: flex-start;
+            background: var(--chat-them);
+            border-bottom-left-radius: 6px;
+        }
+        
+        .message-time {
+            font-size: 10px;
+            text-align: right;
+            margin-top: 4px;
+            opacity: 0.7;
+        }
+        
+        .chat-input-container {
+            display: flex;
+            padding: 12px;
+            background: rgba(0,0,0,0.2);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            gap: 8px;
+        }
+        
+        .chat-input {
+            flex: 1;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 20px;
+            padding: 10px 16px;
+            color: #fff;
+            font-size: 14px;
+            resize: none;
+            max-height: 100px;
+        }
+        
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--neon-pink);
+        }
+        
+        .chat-send-btn {
+            background: var(--neon-pink);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #111;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .chat-send-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .chat-emoji-btn {
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 20px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .emoji-picker {
+            position: absolute;
+            bottom: 70px;
+            right: 20px;
+            background: rgba(30,30,40,0.95);
+            border-radius: 12px;
+            padding: 10px;
+            display: none;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 5px;
+            max-width: 250px;
+            z-index: 100;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .emoji {
+            font-size: 20px;
+            cursor: pointer;
+            text-align: center;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        
+        .emoji:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 16px;
+            font-size: 12px;
+            color: var(--typing);
+        }
+        
+        .typing-dots {
+            display: flex;
+            gap: 3px;
+        }
+        
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--typing);
+            animation: typing 1.4s infinite ease-in-out;
+        }
+        
+        .typing-dot:nth-child(1) { animation-delay: 0s; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
+        }
+
+        .meter {
+            height: 18px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+        
+        .meter > i {
+            display: block;
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, var(--neon-pink), var(--neon-gold));
+            transition: width 1.2s ease;
+        }
+
+        /* Daily Tasks Styles */
+        .tasks-container {
+            padding: 20px;
+        }
+        
+        .task-category {
+            margin-bottom: 25px;
+        }
+        
+        .task-category h3 {
+            color: var(--neon-pink);
+            margin-bottom: 15px;
+            font-size: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 8px;
+        }
+        
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .task-item:hover {
+            background: rgba(255,255,255,0.08);
+            transform: translateY(-2px);
+        }
+        
+        .task-item.completed {
+            background: rgba(0, 210, 106, 0.1);
+            border-color: var(--task-complete);
+        }
+        
+        .task-checkbox {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .task-checkbox.checked {
+            background: var(--task-complete);
+            border-color: var(--task-complete);
+        }
+        
+        .task-checkbox.checked::after {
+            content: '✓';
+            color: #111;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .task-text {
+            flex: 1;
+            font-size: 15px;
+        }
+        
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+        
+        .task-points {
+            background: rgba(255,255,255,0.1);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .task-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--neon-pink);
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 5px;
+        }
+        
+        .task-motivation {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            font-style: italic;
+        }
+        
+        .task-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .heart {
+            position: fixed;
+            width: 18px;
+            height: 18px;
+            background: var(--neon-pink);
+            transform: rotate(-45deg);
+            pointer-events: none;
+            z-index: 90;
+        }
+        
+        .heart:before, .heart:after {
+            content: "";
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--neon-pink);
+        }
+        
+        .heart:before {
+            top: -9px;
+            left: 0;
+        }
+        
+        .heart:after {
+            left: 9px;
+            top: 0;
+        }
+
+        footer {
+            padding: 24px;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: var(--muted);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .hidden-input {
+            display: none;
+        }
+
+        .online-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 10px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--online);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* Privacy Notice */
+        .privacy-notice {
+            background: rgba(255, 45, 149, 0.1);
+            border: 1px solid var(--neon-pink);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .privacy-notice a {
+            color: var(--neon-gold);
+            text-decoration: none;
+        }
+
+        .privacy-notice a:hover {
+            text-decoration: underline;
+        }
+
+        /* Public Features */
+        .public-features {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .feature-btn {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: var(--muted);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-btn:hover {
+            background: rgba(255,255,255,0.12);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 780px) {
+            .profiles { justify-content: center; }
+            .profile { width: 160px; }
+            header { flex-direction: column; align-items: stretch; }
+            .brand { justify-content: center; margin-bottom: 10px; }
+            nav { justify-content: center; }
+            .message { max-width: 85%; }
+            .chat-container { height: 400px; }
+            .task-stats { flex-direction: column; gap: 15px; }
+            .task-actions { flex-wrap: wrap; }
+            .public-features { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+<!-- Canvas Background -->
+<canvas id="bgCanvas"></canvas>
+
+<!-- Login Page -->
+<div id="loginPage">
+    <div class="login-container">
+        <h1 class="login-title">Our Love Story</h1>
+        <div class="privacy-notice">
+            <p>Your data is stored locally on your device and is not shared with any servers. For privacy, clear your browser data when using a shared device.</p>
+        </div>
+        <form class="login-form" id="loginForm">
+            <div class="form-group">
+                <label class="form-label">Your Name</label>
+                <input type="text" class="form-input" id="userName" placeholder="Enter your name" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Who are you?</label>
+                <div class="couple-select">
+                    <button type="button" class="couple-btn active" data-role="person1">Person 1</button>
+                    <button type="button" class="couple-btn" data-role="person2">Person 2</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Partner's Name</label>
+                <input type="text" class="form-input" id="partnerName" placeholder="Enter partner's name" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Our Special Date</label>
+                <input type="date" class="form-input" id="specialDate" required>
+            </div>
+
+            <button type="submit" class="login-btn">Enter Our Love Story</button>
+        </form>
+        <div class="online-status">
+            <div class="status-dot"></div>
+            <span>Online System - Real-time Updates</span>
+        </div>
+    </div>
+</div>
+
+<!-- Main App -->
+<div id="mainApp">
+    <header>
+        <div class="brand">
+            <h1 id="mainTitle">Person 1 ❤️ Person 2</h1>
+            <div class="online-status">
+                <div class="status-dot"></div>
+                <span>Online</span>
+            </div>
+            <button class="logout-btn" id="logoutBtn">Logout</button>
+        </div>
+        <nav>
+            <button data-page="home" class="active">Home</button>
+            <button data-page="story">Story</button>
+            <button data-page="gallery">Gallery</button>
+            <button data-page="memories">Memories</button>
+            <button data-page="goals">Future Goals</button>
+            <button data-page="tasks">Daily Tasks</button>
+            <button data-page="chat">Chat</button>
+            <button data-page="letter">Love Letter</button>
+        </nav>
+    </header>
+
+    <main class="container">
+        <!-- Home Page -->
+        <section id="home" class="page active">
+            <div class="card">
+                <h2 class="neon">Welcome to our Love Page</h2>
+                <div class="privacy-notice">
+                    <p>All your data is stored locally on this device. For complete privacy, use incognito mode or clear browser data after use.</p>
+                </div>
+                <div class="profiles">
+                    <div class="profile">
+                        <img id="homeBoy" alt="Person 1" class="profile-pic">
+                        <h4 id="boyName">Person 1</h4>
+                        <div class="profile-controls">
+                            <button class="profile-btn change-pic" data-person="person1">Change Photo</button>
+                            <button class="profile-btn remove-pic" data-person="person1">Remove Photo</button>
+                        </div>
+                        <input type="file" class="hidden-input profile-upload" data-person="person1" accept="image/*">
+                    </div>
+                    <div class="profile">
+                        <img id="homeGirl" alt="Person 2" class="profile-pic heartbeat">
+                        <h4 id="girlName">Person 2</h4>
+                        <div class="profile-controls">
+                            <button class="profile-btn change-pic" data-person="person2">Change Photo</button>
+                            <button class="profile-btn remove-pic" data-person="person2">Remove Photo</button>
+                        </div>
+                        <input type="file" class="hidden-input profile-upload" data-person="person2" accept="image/*">
+                    </div>
+                </div>
+                <div class="controls">
+                    <button id="revealBtn" class="btn">Reveal Love Meter</button>
+                    <button class="btn" onclick="showPage('gallery')">Open Gallery</button>
+                    <button class="btn" onclick="showPage('chat')">Open Chat</button>
+                </div>
+                <div class="meter"><i></i></div>
+                
+                <!-- Public Features -->
+                <div class="public-features">
+                    <button class="feature-btn" id="exportDataBtn">Export Our Data</button>
+                    <button class="feature-btn" id="clearDataBtn">Clear All Data</button>
+                    <button class="feature-btn" id="sharePageBtn">Share This Page</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Other Pages -->
+        <section id="story" class="page">
+            <div class="card">
+                <h2 class="neon">Our Story</h2>
+                <p id="storyText">You started as strangers and became everything.</p>
+                <div style="text-align:center;margin-top:15px;">
+                    <button class="back-btn" onclick="showPage('home')">Back to Home</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="gallery" class="page">
+            <div class="card">
+                <h2 class="neon">Gallery</h2>
+                <div class="gallery-grid" id="galleryGrid"></div>
+                <div style="text-align:center;margin-top:12px">
+                    <input type="file" id="galleryUpload" accept="image/*" multiple class="hidden-input">
+                    <button id="galleryBtn" class="btn">Upload Photos</button>
+                </div>
+                <div style="text-align:center;margin-top:15px;">
+                    <button class="back-btn" onclick="showPage('home')">Back to Home</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="memories" class="page">
+            <div class="card">
+                <h2 class="neon">Memories</h2>
+                <div id="memList"></div>
+                <div style="text-align:center;margin-top:12px">
+                    <button id="addMemory" class="btn">Add Memory</button>
+                </div>
+                <div style="text-align:center;margin-top:15px;">
+                    <button class="back-btn" onclick="showPage('home')">Back to Home</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="goals" class="page">
+            <div class="card">
+                <h2 class="neon">Future Goals</h2>
+                <ul id="goalsList"></ul>
+                <div style="text-align:center;margin-top:12px">
+                    <button id="addGoal" class="btn">Add Goal</button>
+                </div>
+                <div style="text-align:center;margin-top:15px;">
+                    <button class="back-btn" onclick="showPage('home')">Back to Home</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Daily Tasks Page -->
+        <section id="tasks" class="page">
+            <div class="card">
+                <h2 class="neon">Daily Love Tasks</h2>
+                <div class="tasks-container">
+                    <div class="task-motivation">
+                        "Small daily acts of love create a lifetime of happiness together. Complete these tasks to strengthen your bond every day!"
+                    </div>
+                    
+                    <div class="task-category">
+                        <h3>💖 Communication Tasks</h3>
+                        <div class="task-list" id="communicationTasks"></div>
+                    </div>
+                    
+                    <div class="task-category">
+                        <h3>🌟 Appreciation Tasks</h3>
+                        <div class="task-list" id="appreciationTasks"></div>
+                    </div>
+                    
+                    <div class="task-category">
+                        <h3>💕 Connection Tasks</h3>
+                        <div class="task-list" id="connectionTasks"></div>
+                    </div>
+                    
+                    <div class="task-stats">
+                        <div class="stat-item">
+                            <div class="stat-value" id="completedTasks">0</div>
+                            <div class="stat-label">Completed Today</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="totalPoints">0</div>
+                            <div class="stat-label">Love Points</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="streakCount">0</div>
+                            <div class="stat-label">Day Streak</div>
+                        </div>
+                    </div>
+                    
+                    <div class="task-actions">
+                        <button class="btn" id="addCustomTask">Add Custom Task</button>
+                        <button class="btn secondary" id="resetDailyTasks">Reset Daily Tasks</button>
+                    </div>
+                </div>
+                <div style="text-align:center;margin-top:15px;">
+                    <button class="back-btn" onclick="showPage('home')">Back to Home</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Enhanced Chat Page -->
+        <section id="chat" class="page">
+            <div class="card">
+                <h2 class="neon">Chat</h2>
+                <div class="chat-container">
+                    <div class="chat-header">
+                        <img id="chatAvatar" class="chat-avatar" alt="Partner">
+                        <div class="chat-partner-info">
+                            <div class="chat-partner-name" id="chatPartnerName">Partner</div>
+                            <div class="chat-status online" id="chatStatus">Online</div>
+                        </div>
+                        <div class="chat-actions">
+                            <button class="chat-action-btn" id="chatVideoCall">📹</button>
+                            <button class="chat-action-btn" id="chatVoiceCall">📞</button>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-window" id="chatWindow"></div>
+                    
+                    <div class="typing-indicator" id="typingIndicator" style="display: none;">
+                        <span id="typingName">Partner</span> is typing
+                        <div class="typing-dots">
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-input-container">
+                        <textarea class="chat-input" id="chatInput" placeholder="Type a message..." rows="1"></textarea>
+                        <button class="chat-emoji-btn" id="chatEmojiBtn">😊</button>
+                        <button class="chat-send-btn" id="chatSendBtn">➤</button>
+                    </div>
+                </div>
+                
+                <div class="emoji-picker" id="emojiPicker"></div>
+                
+                <div style="text-align:center;margin-top:15px;">
+                    <button class="back-btn" onclick="showPage('home')">Back to Home</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="letter" class="page">
+            <div class="card">
+                <h2 class="neon">Love Letter</h2>
+                <div id="letterArea" style="min-height:180px;white-space:pre-line;line-height:1.6"></div>
+                <div style="text-align:center;margin-top:12px">
+                    <button id="writeBtn" class="btn">Write Slowly</button>
+                    <button id="fillBtn" class="btn secondary">Fill Instantly</button>
+                    <button id="saveLetterBtn" class="btn secondary">Save Letter</button>
+                </div>
+                <div style="text-align:center;margin-top:15px;">
+                    <button class="back-btn" onclick="showPage('home')">Back to Home</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 <span id="footerNames">Person 1 & Person 2</span> — Online Neon Love</p>
+        <p style="margin-top: 10px; font-size: 12px; opacity: 0.7;">
+            All data is stored locally on your device. For privacy, clear browser data after use.
+        </p>
+    </footer>
+</div>
+
+<script>
+// Online Love Story System with Real-time Features
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Online Love Story System Loaded!');
+    
+    let userData = {
+        userName: '',
+        userRole: 'person1',
+        partnerName: '',
+        specialDate: '',
+        person1Name: 'Person 1',
+        person2Name: 'Person 2',
+        userId: null
+    };
+
+    // Online System Variables
+    let onlineStatus = true;
+    let partnerOnline = false;
+    let realtimeUpdates = true;
+    let syncInterval = null;
+
+    // Daily tasks data
+    let dailyTasks = {
+        communication: [
+            { id: 1, text: "Send a good morning text to your partner", points: 5, completed: false },
+            { id: 2, text: "Ask about your partner's day", points: 5, completed: false },
+            { id: 3, text: "Share something you appreciate about your partner", points: 10, completed: false },
+            { id: 4, text: "Have a 10-minute phone call without distractions", points: 15, completed: false }
+        ],
+        appreciation: [
+            { id: 5, text: "Compliment your partner genuinely", points: 5, completed: false },
+            { id: 6, text: "Write a small note of appreciation", points: 10, completed: false },
+            { id: 7, text: "Thank your partner for something they did", points: 5, completed: false },
+            { id: 8, text: "Share a memory you cherish together", points: 10, completed: false }
+        ],
+        connection: [
+            { id: 9, text: "Plan your next date night", points: 10, completed: false },
+            { id: 10, text: "Do a small act of kindness for your partner", points: 10, completed: false },
+            { id: 11, text: "Share a goal you want to achieve together", points: 15, completed: false },
+            { id: 12, text: "Spend 30 minutes of quality time together", points: 20, completed: false }
+        ]
+    };
+
+    let taskStats = {
+        completedToday: 0,
+        totalPoints: 0,
+        streak: 0,
+        lastCompletedDate: null
+    };
+
+    // Chat system variables
+    let chatHistory = [];
+    let isTyping = false;
+    let typingTimer = null;
+    let partnerTyping = false;
+
+    // Utility functions
+    function qs(s) { return document.querySelector(s); }
+    function qsa(s) { return Array.from(document.querySelectorAll(s)); }
+
+    // ==================== ONLINE SYSTEM ====================
+    class OnlineSystem {
+        constructor() {
+            this.connected = true;
+            this.syncEnabled = true;
+            this.partnerStatus = false;
+        }
+
+        // Simulate online connection
+        connect() {
+            this.connected = true;
+            console.log('Online system connected');
+            this.startSync();
+            this.simulatePartnerActivity();
+        }
+
+        // Start data synchronization
+        startSync() {
+            if (this.syncEnabled) {
+                syncInterval = setInterval(() => {
+                    this.syncData();
+                }, 3000); // Sync every 3 seconds
+            }
+        }
+
+        // Sync data between users
+        syncData() {
+            if (!this.connected) return;
+            
+            // Simulate data synchronization
+            const lastSync = localStorage.getItem('lastSync') || 0;
+            const currentTime = Date.now();
+            
+            // Sync chat messages
+            this.syncChatMessages();
+            
+            // Sync task progress
+            this.syncTaskProgress();
+            
+            // Sync gallery updates
+            this.syncGallery();
+            
+            localStorage.setItem('lastSync', currentTime);
+        }
+
+        // Sync chat messages
+        syncChatMessages() {
+            const myMessages = JSON.parse(localStorage.getItem('chatMessages') || '[]');
+            const partnerMessages = JSON.parse(localStorage.getItem('partnerChatMessages') || '[]');
+            
+            // Merge messages and update display
+            const allMessages = [...myMessages, ...partnerMessages]
+                .sort((a, b) => a.timestamp - b.timestamp);
+                
+            if (allMessages.length > chatHistory.length) {
+                chatHistory = allMessages;
+                renderChat();
+            }
+        }
+
+        // Sync task progress
+        syncTaskProgress() {
+            const partnerTasks = JSON.parse(localStorage.getItem('partnerTasks') || '{}');
+            if (Object.keys(partnerTasks).length > 0) {
+                // Update task completion status based on partner's progress
+                for (const category in partnerTasks) {
+                    if (dailyTasks[category]) {
+                        partnerTasks[category].forEach(partnerTask => {
+                            const myTask = dailyTasks[category].find(t => t.id === partnerTask.id);
+                            if (myTask && partnerTask.completed && !myTask.completed) {
+                                myTask.completed = true;
+                                taskStats.completedToday++;
+                                taskStats.totalPoints += myTask.points;
+                            }
+                        });
+                    }
+                }
+                renderTasks();
+                updateTaskStats();
+            }
+        }
+
+        // Sync gallery
+        syncGallery() {
+            const partnerGallery = JSON.parse(localStorage.getItem('partnerGallery') || '[]');
+            if (partnerGallery.length > 0) {
+                partnerGallery.forEach(image => {
+                    if (!galleryImages.includes(image)) {
+                        addGalleryImage(image);
+                    }
+                });
+            }
+        }
+
+        // Simulate partner activity
+        simulatePartnerActivity() {
+            setInterval(() => {
+                this.partnerStatus = Math.random() > 0.3; // 70% online
+                updatePartnerOnlineStatus();
+                
+                // Simulate partner completing tasks
+                if (this.partnerStatus && Math.random() > 0.7) {
+                    this.simulatePartnerTaskCompletion();
+                }
+                
+                // Simulate partner sending messages
+                if (this.partnerStatus && Math.random() > 0.8) {
+                    this.simulatePartnerMessage();
+                }
+            }, 10000);
+        }
+
+        // Simulate partner completing tasks
+        simulatePartnerTaskCompletion() {
+            const randomCategory = Object.keys(dailyTasks)[Math.floor(Math.random() * Object.keys(dailyTasks).length)];
+            const incompleteTasks = dailyTasks[randomCategory].filter(task => !task.completed);
+            
+            if (incompleteTasks.length > 0) {
+                const randomTask = incompleteTasks[Math.floor(Math.random() * incompleteTasks.length)];
+                randomTask.completed = true;
+                taskStats.completedToday++;
+                taskStats.totalPoints += randomTask.points;
+                
+                // Save partner's task progress
+                const partnerTasks = JSON.parse(localStorage.getItem('partnerTasks') || '{}');
+                if (!partnerTasks[randomCategory]) partnerTasks[randomCategory] = [];
+                partnerTasks[randomCategory].push({id: randomTask.id, completed: true});
+                localStorage.setItem('partnerTasks', JSON.stringify(partnerTasks));
+                
+                renderTasks();
+                updateTaskStats();
+                createHeart(Math.random() * window.innerWidth, Math.random() * window.innerHeight);
+            }
+        }
+
+        // Simulate partner sending message
+        simulatePartnerMessage() {
+            const responses = [
+                "I was just thinking about you! 💭",
+                "You make me so happy! 😊",
+                "I love you more every day! ❤️",
+                "Can't wait to see you! ⏳",
+                "You're amazing! 🌟",
+                "Thinking of our special moments together 💫",
+                "You're my favorite person! 🥰",
+                "I feel so lucky to have you! 🍀"
+            ];
+            
+            const message = {
+                id: Date.now(),
+                sender: 'partner',
+                text: responses[Math.floor(Math.random() * responses.length)],
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                timestamp: Date.now()
+            };
+            
+            chatHistory.push(message);
+            localStorage.setItem('partnerChatMessages', JSON.stringify(
+                JSON.parse(localStorage.getItem('partnerChatMessages') || '[]').concat([message])
+            ));
+            renderChat();
+        }
+
+        // Send typing indicator
+        sendTypingIndicator(typing) {
+            // Simulate partner seeing typing indicator
+            if (typing) {
+                setTimeout(() => {
+                    if (this.partnerStatus) {
+                        partnerTyping = true;
+                        qs('#typingIndicator').style.display = 'flex';
+                    }
+                }, 1000);
+            } else {
+                partnerTyping = false;
+                qs('#typingIndicator').style.display = 'none';
+            }
+        }
+
+        // Update partner online status
+        updatePartnerStatus(online) {
+            this.partnerStatus = online;
+            updatePartnerOnlineStatus();
+        }
+    }
+
+    const onlineSystem = new OnlineSystem();
+
+    // ==================== CANVAS ANIMATION ====================
+    const canvas = qs('#bgCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    const particles = [];
+    for (let i = 0; i < 50; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            size: Math.random() * 2 + 0.5,
+            speedX: (Math.random() - 0.5) * 0.3,
+            speedY: (Math.random() - 0.5) * 0.3,
+            color: `hsla(${320 + Math.random() * 40}, 80%, 60%, ${Math.random() * 0.1 + 0.05})`
+        });
+    }
+
+    function animate() {
+        ctx.fillStyle = 'rgba(11, 11, 15, 0.05)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        particles.forEach(p => {
+            p.x += p.speedX;
+            p.y += p.speedY;
+            if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
+            if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+            
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.fill();
+        });
+        
+        requestAnimationFrame(animate);
+    }
+    animate();
+
+    // ==================== HEART ANIMATION ====================
+    function createHeart(x, y) {
+        const heart = document.createElement('div');
+        heart.className = 'heart';
+        heart.style.left = (x - 9) + 'px';
+        heart.style.top = (y - 9) + 'px';
+        document.body.appendChild(heart);
+        
+        heart.animate([
+            { transform: 'translateY(0) scale(1) rotate(-45deg)', opacity: 1 },
+            { transform: 'translateY(-80px) scale(1.2) rotate(-45deg)', opacity: 0 }
+        ], {
+            duration: 1000,
+            easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+        }).onfinish = () => heart.remove();
+    }
+
+    document.addEventListener('mousemove', (e) => {
+        if (Math.random() < 0.03) {
+            createHeart(e.clientX, e.clientY);
+        }
+    });
+
+    // ==================== PAGE NAVIGATION ====================
+    window.showPage = function(pageId) {
+        qsa('.page').forEach(p => p.classList.remove('active'));
+        qsa('nav button').forEach(b => b.classList.remove('active'));
+        
+        const page = qs('#' + pageId);
+        const navBtn = qs(`nav button[data-page="${pageId}"]`);
+        
+        if (page) page.classList.add('active');
+        if (navBtn) navBtn.classList.add('active');
+        
+        window.scrollTo(0, 0);
+        
+        if (pageId === 'chat') {
+            setTimeout(() => {
+                qs('#chatInput').focus();
+            }, 300);
+        }
+        
+        if (pageId === 'tasks') {
+            loadTasks();
+        }
+    };
+
+    // Nav buttons
+    qsa('nav button').forEach(btn => {
+        btn.addEventListener('click', () => showPage(btn.getAttribute('data-page')));
+    });
+
+    // ==================== LOGIN SYSTEM ====================
+    const loginPage = qs('#loginPage');
+    const mainApp = qs('#mainApp');
+    const loginForm = qs('#loginForm');
+
+    // Couple buttons
+    qsa('.couple-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            qsa('.couple-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            userData.userRole = this.getAttribute('data-role');
+        });
+    });
+
+    // Login form
+    loginForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const userName = qs('#userName').value.trim();
+        const partnerName = qs('#partnerName').value.trim();
+        const specialDate = qs('#specialDate').value;
+
+        if (!userName || !partnerName || !specialDate) {
+            alert('Please fill all fields!');
+            return;
+        }
+
+        userData.userName = userName;
+        userData.partnerName = partnerName;
+        userData.specialDate = specialDate;
+        userData.userId = Date.now().toString();
+        
+        if (userData.userRole === 'person1') {
+            userData.person1Name = userName;
+            userData.person2Name = partnerName;
+        } else {
+            userData.person1Name = partnerName;
+            userData.person2Name = userName;
+        }
+
+        // Save user data
+        localStorage.setItem('userData', JSON.stringify(userData));
+        
+        // Initialize online system
+        onlineSystem.connect();
+
+        updateUIWithUserData();
+        loginPage.style.display = 'none';
+        mainApp.style.display = 'block';
+        
+        // Initialize systems
+        initChatSystem();
+        loadTasks();
+        loadGallery();
+    });
+
+    function updateUIWithUserData() {
+        qs('#mainTitle').textContent = `${userData.person1Name} ❤️ ${userData.person2Name}`;
+        qs('#footerNames').textContent = `${userData.person1Name} & ${userData.partnerName}`;
+        qs('#boyName').textContent = userData.person1Name;
+        qs('#girlName').textContent = userData.person2Name;
+        
+        // Update profile images
+        qs('#homeBoy').src = placeholderSVG(userData.person1Name);
+        qs('#homeGirl').src = placeholderSVG(userData.person2Name);
+        
+        // Update story
+        const date = new Date(userData.specialDate);
+        const storyText = `Our beautiful love story began on ${date.toLocaleDateString('en-US', { 
+            year: 'numeric', month: 'long', day: 'numeric' 
+        })}. ${userData.userName} and ${userData.partnerName} found each other and created something magical. Every day together is a new chapter in our love story.`;
+        qs('#storyText').textContent = storyText;
+        
+        // Update chat
+        qs('#chatPartnerName').textContent = userData.partnerName;
+        qs('#chatAvatar').src = userData.userRole === 'person1' 
+            ? placeholderSVG(userData.person2Name) 
+            : placeholderSVG(userData.person1Name);
+        qs('#typingName').textContent = userData.partnerName;
+        
+        // Update love letter
+        updateLoveLetter();
+    }
+
+    function placeholderSVG(name) {
+        return `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect width="100%" height="100%" fill="#1a0022"/><text x="50%" y="50%" fill="#ff8" font-size="26" text-anchor="middle" dominant-baseline="middle">${name}</text></svg>`;
+    }
+
+    function updateLoveLetter() {
+        const letter = `My Dearest ${userData.partnerName},
+
+From the moment we met, my world has been brighter. Every day with you is a blessing that I cherish deeply.
+
+Your love fills my heart with joy and my life with meaning. I appreciate every little thing about you - your smile, your laughter, the way you care.
+
+I look forward to creating many more beautiful memories together and building our future side by side.
+
+Forever yours,
+${userData.userName}`;
+
+        window.loveLetterContent = letter;
+    }
+
+    // Update partner online status
+    function updatePartnerOnlineStatus() {
+        const statusElement = qs('#chatStatus');
+        if (onlineSystem.partnerStatus) {
+            statusElement.textContent = 'Online';
+            statusElement.className = 'chat-status online';
+        } else {
+            statusElement.textContent = 'Offline';
+            statusElement.className = 'chat-status';
+        }
+    }
+
+    // Logout
+    qs('#logoutBtn').addEventListener('click', function() {
+        if (confirm('Are you sure you want to logout?')) {
+            if (syncInterval) clearInterval(syncInterval);
+            mainApp.style.display = 'none';
+            loginPage.style.display = 'flex';
+            loginForm.reset();
+            qsa('.couple-btn')[0].classList.add('active');
+        }
+    });
+
+    // ==================== PROFILE PICTURES ====================
+    qsa('.change-pic').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const person = this.getAttribute('data-person');
+            qs(`.profile-upload[data-person="${person}"]`).click();
+        });
+    });
+
+    qsa('.remove-pic').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const person = this.getAttribute('data-person');
+            const img = qs(person === 'person1' ? '#homeBoy' : '#homeGirl');
+            img.src = placeholderSVG(userData[person === 'person1' ? 'person1Name' : 'person2Name']);
+            alert('Profile picture removed!');
+        });
+    });
+
+    qsa('.profile-upload').forEach(input => {
+        input.addEventListener('change', function(e) {
+            const person = this.getAttribute('data-person');
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    qs(person === 'person1' ? '#homeBoy' : '#homeGirl').src = e.target.result;
+                    alert('Profile picture updated!');
+                };
+                reader.readAsDataURL(file);
+            }
+            this.value = '';
+        });
+    });
+
+    // Initialize profile images
+    qs('#homeBoy').src = placeholderSVG('Person 1');
+    qs('#homeGirl').src = placeholderSVG('Person 2');
+
+    // ==================== GALLERY SYSTEM ====================
+    let galleryImages = [];
+    
+    function addGalleryImage(src) {
+        if (!galleryImages.includes(src)) {
+            galleryImages.push(src);
+            const polaroid = document.createElement('div');
+            polaroid.className = 'polaroid';
+            polaroid.innerHTML = `<img src="${src}" alt="Memory">`;
+            qs('#galleryGrid').appendChild(polaroid);
+            
+            // Save to online storage
+            localStorage.setItem('galleryImages', JSON.stringify(galleryImages));
+        }
+    }
+
+    function loadGallery() {
+        const savedImages = localStorage.getItem('galleryImages');
+        if (savedImages) {
+            galleryImages = JSON.parse(savedImages);
+            galleryImages.forEach(src => {
+                const polaroid = document.createElement('div');
+                polaroid.className = 'polaroid';
+                polaroid.innerHTML = `<img src="${src}" alt="Memory">`;
+                qs('#galleryGrid').appendChild(polaroid);
+            });
+        }
+    }
+
+    // Add sample images
+    setTimeout(() => {
+        if (galleryImages.length === 0) {
+            // Use local SVG placeholders instead of external images
+            const sampleImages = [
+                placeholderSVG('First Memory'),
+                placeholderSVG('Special Moment'),
+                placeholderSVG('Together')
+            ];
+            sampleImages.forEach(src => addGalleryImage(src));
+        }
+    }, 100);
+
+    qs('#galleryBtn').addEventListener('click', () => qs('#galleryUpload').click());
+    qs('#galleryUpload').addEventListener('change', function(e) {
+        Array.from(e.target.files).forEach(file => {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = e => addGalleryImage(e.target.result);
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+
+    // ==================== MEMORIES & GOALS ====================
+    let memories = ['First meeting', 'First date', 'First vacation together'];
+    let goals = ['Travel together', 'Build a home', 'Learn something new together'];
+
+    function renderMemories() {
+        const memList = qs('#memList');
+        memList.innerHTML = memories.map(m => 
+            `<div style="margin: 8px 0; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 8px;">❤️ ${m}</div>`
+        ).join('');
+    }
+
+    function renderGoals() {
+        const goalsList = qs('#goalsList');
+        goalsList.innerHTML = goals.map(g => 
+            `<li style="margin: 8px 0; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 8px;">🎯 ${g}</li>`
+        ).join('');
+    }
+
+    qs('#addMemory').addEventListener('click', function() {
+        const memory = prompt('Enter a memory:');
+        if (memory) {
+            memories.push(memory);
+            renderMemories();
+            // Sync with partner
+            localStorage.setItem('memories', JSON.stringify(memories));
+        }
+    });
+
+    qs('#addGoal').addEventListener('click', function() {
+        const goal = prompt('Enter a goal:');
+        if (goal) {
+            goals.push(goal);
+            renderGoals();
+            // Sync with partner
+            localStorage.setItem('goals', JSON.stringify(goals));
+        }
+    });
+
+    // Load saved memories and goals
+    const savedMemories = localStorage.getItem('memories');
+    const savedGoals = localStorage.getItem('goals');
+    if (savedMemories) memories = JSON.parse(savedMemories);
+    if (savedGoals) goals = JSON.parse(savedGoals);
+
+    renderMemories();
+    renderGoals();
+
+    // ==================== LOVE METER ====================
+    qs('#revealBtn').addEventListener('click', function() {
+        qs('.meter i').style.width = '96%';
+        createHeart(window.innerWidth/2, window.innerHeight/2);
+        setTimeout(() => {
+            createHeart(window.innerWidth/2 + 50, window.innerHeight/2 - 50);
+            createHeart(window.innerWidth/2 - 50, window.innerHeight/2 + 50);
+        }, 300);
+    });
+
+    // ==================== CHAT SYSTEM ====================
+    function initChatSystem() {
+        loadChatHistory();
+        setupChatEventListeners();
+        initEmojiPicker();
+    }
+
+    function loadChatHistory() {
+        const savedMessages = localStorage.getItem('chatMessages');
+        if (savedMessages) {
+            chatHistory = JSON.parse(savedMessages);
+        }
+        renderChat();
+    }
+
+    function setupChatEventListeners() {
+        // Send message
+        qs('#chatSendBtn').addEventListener('click', sendMessage);
+        qs('#chatInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        
+        // Typing indicator
+        qs('#chatInput').addEventListener('input', function() {
+            if (!isTyping) {
+                isTyping = true;
+                onlineSystem.sendTypingIndicator(true);
+            }
+            
+            clearTimeout(typingTimer);
+            typingTimer = setTimeout(() => {
+                isTyping = false;
+                onlineSystem.sendTypingIndicator(false);
+            }, 1000);
+        });
+        
+        // Auto-resize textarea
+        qs('#chatInput').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+        
+        // Emoji picker
+        qs('#chatEmojiBtn').addEventListener('click', function() {
+            const picker = qs('#emojiPicker');
+            picker.style.display = picker.style.display === 'grid' ? 'none' : 'grid';
+        });
+        
+        // Close emoji picker when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('#emojiPicker') && !e.target.closest('#chatEmojiBtn')) {
+                qs('#emojiPicker').style.display = 'none';
+            }
+        });
+    }
+
+    function sendMessage() {
+        const input = qs('#chatInput');
+        const text = input.value.trim();
+        
+        if (!text) return;
+        
+        const message = {
+            id: Date.now(),
+            sender: 'me',
+            text: text,
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            timestamp: Date.now()
+        };
+        
+        // Save to local storage
+        chatHistory.push(message);
+        localStorage.setItem('chatMessages', JSON.stringify(chatHistory));
+        
+        renderChat();
+        
+        // Clear input and reset height
+        input.value = '';
+        input.style.height = 'auto';
+        
+        // Hide typing indicator
+        qs('#typingIndicator').style.display = 'none';
+        
+        // Simulate partner response after delay
+        if (onlineSystem.partnerStatus && Math.random() > 0.5) {
+            setTimeout(() => {
+                onlineSystem.simulatePartnerMessage();
+            }, 2000 + Math.random() * 3000);
+        }
+    }
+
+    function renderChat() {
+        const chatWindow = qs('#chatWindow');
+        chatWindow.innerHTML = '';
+        
+        chatHistory.forEach(msg => {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${msg.sender}`;
+            
+            messageDiv.innerHTML = `
+                <div class="message-text">${msg.text}</div>
+                <div class="message-time">${msg.time}</div>
+            `;
+            
+            chatWindow.appendChild(messageDiv);
+        });
+        
+        // Scroll to bottom
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    function initEmojiPicker() {
+        const emojiPicker = qs('#emojiPicker');
+        const emojis = ['😀', '😊', '😂', '❤️', '😍', '🤔', '😎', '🥰', '😘', '👍', '🎉', '💕', '✨', '🌟', '🙏', '😢', '😭', '😡', '🤗', '😴'];
+        
+        emojis.forEach(emoji => {
+            const emojiSpan = document.createElement('span');
+            emojiSpan.className = 'emoji';
+            emojiSpan.textContent = emoji;
+            emojiSpan.addEventListener('click', function() {
+                const input = qs('#chatInput');
+                input.value += emoji;
+                input.focus();
+            });
+            emojiPicker.appendChild(emojiSpan);
+        });
+    }
+
+    // ==================== DAILY TASKS SYSTEM ====================
+    function loadTasks() {
+        const savedTasks = localStorage.getItem('dailyTasks');
+        const savedStats = localStorage.getItem('taskStats');
+        
+        if (savedTasks) {
+            dailyTasks = JSON.parse(savedTasks);
+        }
+        
+        if (savedStats) {
+            taskStats = JSON.parse(savedStats);
+            
+            // Check if it's a new day to reset completed tasks
+            const today = new Date().toDateString();
+            if (taskStats.lastCompletedDate !== today) {
+                resetDailyCompletion();
+                taskStats.lastCompletedDate = today;
+                saveTaskData();
+            }
+        }
+        
+        renderTasks();
+        updateTaskStats();
+    }
+    
+    function renderTasks() {
+        // Render communication tasks
+        const commTasks = qs('#communicationTasks');
+        commTasks.innerHTML = dailyTasks.communication.map(task => `
+            <div class="task-item ${task.completed ? 'completed' : ''}" data-id="${task.id}">
+                <div class="task-checkbox ${task.completed ? 'checked' : ''}" data-id="${task.id}"></div>
+                <div class="task-text">${task.text}</div>
+                <div class="task-points">+${task.points}</div>
+            </div>
+        `).join('');
+        
+        // Render appreciation tasks
+        const appTasks = qs('#appreciationTasks');
+        appTasks.innerHTML = dailyTasks.appreciation.map(task => `
+            <div class="task-item ${task.completed ? 'completed' : ''}" data-id="${task.id}">
+                <div class="task-checkbox ${task.completed ? 'checked' : ''}" data-id="${task.id}"></div>
+                <div class="task-text">${task.text}</div>
+                <div class="task-points">+${task.points}</div>
+            </div>
+        `).join('');
+        
+        // Render connection tasks
+        const connTasks = qs('#connectionTasks');
+        connTasks.innerHTML = dailyTasks.connection.map(task => `
+            <div class="task-item ${task.completed ? 'completed' : ''}" data-id="${task.id}">
+                <div class="task-checkbox ${task.completed ? 'checked' : ''}" data-id="${task.id}"></div>
+                <div class="task-text">${task.text}</div>
+                <div class="task-points">+${task.points}</div>
+            </div>
+        `).join('');
+        
+        // Add event listeners to checkboxes
+        qsa('.task-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('click', function() {
+                const taskId = parseInt(this.getAttribute('data-id'));
+                toggleTaskCompletion(taskId);
+            });
+        });
+    }
+    
+    function toggleTaskCompletion(taskId) {
+        let task = null;
+        let category = null;
+        
+        for (const cat in dailyTasks) {
+            const foundTask = dailyTasks[cat].find(t => t.id === taskId);
+            if (foundTask) {
+                task = foundTask;
+                category = cat;
+                break;
+            }
+        }
+        
+        if (task) {
+            task.completed = !task.completed;
+            
+            if (task.completed) {
+                taskStats.completedToday++;
+                taskStats.totalPoints += task.points;
+                createHeart(Math.random() * window.innerWidth, Math.random() * window.innerHeight);
+            } else {
+                taskStats.completedToday--;
+                taskStats.totalPoints -= task.points;
+            }
+            
+            updateStreak();
+            saveTaskData();
+            renderTasks();
+            updateTaskStats();
+            
+            // Sync with partner
+            const myTasks = JSON.parse(localStorage.getItem('myTasks') || '{}');
+            if (!myTasks[category]) myTasks[category] = [];
+            const existingTask = myTasks[category].find(t => t.id === taskId);
+            if (existingTask) {
+                existingTask.completed = task.completed;
+            } else {
+                myTasks[category].push({id: taskId, completed: task.completed});
+            }
+            localStorage.setItem('myTasks', JSON.stringify(myTasks));
+        }
+    }
+    
+    function updateStreak() {
+        const today = new Date().toDateString();
+        
+        if (taskStats.lastCompletedDate === today) {
+            return;
+        }
+        
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = yesterday.toDateString();
+        
+        if (taskStats.lastCompletedDate === yesterdayStr) {
+            taskStats.streak++;
+        } else if (taskStats.lastCompletedDate !== today) {
+            taskStats.streak = 1;
+        }
+        
+        taskStats.lastCompletedDate = today;
+    }
+    
+    function resetDailyCompletion() {
+        for (const cat in dailyTasks) {
+            dailyTasks[cat].forEach(task => {
+                task.completed = false;
+            });
+        }
+        taskStats.completedToday = 0;
+    }
+    
+    function updateTaskStats() {
+        qs('#completedTasks').textContent = taskStats.completedToday;
+        qs('#totalPoints').textContent = taskStats.totalPoints;
+        qs('#streakCount').textContent = taskStats.streak;
+    }
+    
+    function saveTaskData() {
+        localStorage.setItem('dailyTasks', JSON.stringify(dailyTasks));
+        localStorage.setItem('taskStats', JSON.stringify(taskStats));
+    }
+    
+    // Add custom task
+    qs('#addCustomTask').addEventListener('click', function() {
+        const taskText = prompt('Enter your custom love task:');
+        if (taskText) {
+            const newTask = {
+                id: Date.now(),
+                text: taskText,
+                points: 10,
+                completed: false
+            };
+            
+            dailyTasks.connection.push(newTask);
+            saveTaskData();
+            renderTasks();
+        }
+    });
+    
+    // Reset daily tasks
+    qs('#resetDailyTasks').addEventListener('click', function() {
+        if (confirm('Are you sure you want to reset all daily tasks? This will clear your progress for today.')) {
+            resetDailyCompletion();
+            saveTaskData();
+            renderTasks();
+            updateTaskStats();
+        }
+    });
+
+    // ==================== LOVE LETTER ====================
+    window.loveLetterContent = `My Dearest Love,
+
+Every moment with you is precious. You make my world complete.
+
+With all my love,
+Your Partner`;
+
+    qs('#writeBtn').addEventListener('click', function() {
+        const area = qs('#letterArea');
+        area.textContent = '';
+        const letter = window.loveLetterContent;
+        let i = 0;
+        const timer = setInterval(() => {
+            area.textContent += letter[i++];
+            if (i >= letter.length) clearInterval(timer);
+        }, 50);
+    });
+
+    qs('#fillBtn').addEventListener('click', function() {
+        qs('#letterArea').textContent = window.loveLetterContent;
+    });
+
+    qs('#saveLetterBtn').addEventListener('click', function() {
+        const letterContent = qs('#letterArea').textContent;
+        const blob = new Blob([letterContent], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'love-letter.txt';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        alert('Love letter saved!');
+    });
+
+    // ==================== PUBLIC FEATURES ====================
+    
+    // Export data
+    qs('#exportDataBtn').addEventListener('click', function() {
+        const exportData = {
+            userData: userData,
+            memories: memories,
+            goals: goals,
+            galleryImages: galleryImages.length,
+            chatMessages: chatHistory.length,
+            dailyTasks: dailyTasks,
+            taskStats: taskStats
+        };
+        
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'our-love-story-data.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        alert('Your love story data has been exported!');
+    });
+    
+    // Clear all data
+    qs('#clearDataBtn').addEventListener('click', function() {
+        if (confirm('This will permanently delete all your data. Are you sure?')) {
+            localStorage.clear();
+            alert('All data cleared! The page will now reload.');
+            location.reload();
+        }
+    });
+    
+    // Share page
+    qs('#sharePageBtn').addEventListener('click', function() {
+        if (navigator.share) {
+            navigator.share({
+                title: 'Our Love Story',
+                text: 'Check out our beautiful love story page!',
+                url: window.location.href
+            })
+            .catch(err => console.log('Error sharing:', err));
+        } else {
+            // Fallback for browsers that don't support Web Share API
+            navigator.clipboard.writeText(window.location.href)
+                .then(() => alert('Page URL copied to clipboard!'))
+                .catch(err => {
+                    // Last resort fallback
+                    prompt('Copy this URL to share:', window.location.href);
+                });
+        }
+    });
+
+    // Set default date to today
+    const today = new Date().toISOString().split('T')[0];
+    qs('#specialDate').value = today;
+
+    // Check for existing user data
+    const savedUserData = localStorage.getItem('userData');
+    if (savedUserData) {
+        userData = JSON.parse(savedUserData);
+        updateUIWithUserData();
+        loginPage.style.display = 'none';
+        mainApp.style.display = 'block';
+        onlineSystem.connect();
+        initChatSystem();
+        loadTasks();
+        loadGallery();
+    }
+});
+</script>
+</body>
+</html>
