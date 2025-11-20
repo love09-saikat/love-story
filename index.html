@@ -3,1435 +3,996 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LoveStory - Connect & Celebrate Your Relationship</title>
-    <meta name="description" content="The ultimate platform for couples to track their love story, share memories, and grow together.">
-    
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
-    
+    <title>LoveStory - Social Platform for Relationships</title>
     <style>
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
         }
-        
+
         :root {
-            --primary: #ff2d95;
-            --secondary: #ffd166;
-            --accent: #00d26a;
-            --dark: #0b0b0f;
-            --darker: #13021f;
-            --light: rgba(255,255,255,0.9);
-            --muted: rgba(255,255,255,0.6);
-            --card-bg: rgba(255,255,255,0.05);
-            --card-border: rgba(255,255,255,0.1);
-            --success: #00d26a;
-            --warning: #ffd166;
-            --error: #ff6b6b;
-        }
-        
-        html, body {
-            height: 100%;
-            background: linear-gradient(135deg, var(--dark), var(--darker));
-            color: #fff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
+            --primary: #1877f2;
+            --primary-dark: #166fe5;
+            --secondary: #42b72a;
+            --secondary-dark: #36a420;
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-primary: #1c1e21;
+            --text-secondary: #65676b;
+            --border: #dddfe2;
+            --hover: #f2f2f2;
+            --success: #42b72a;
+            --warning: #f02849;
         }
 
-        /* Loading Screen */
-        #loadingScreen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, var(--dark), var(--darker));
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.34;
         }
 
-        .loader {
-            width: 50px;
-            height: 50px;
-            border: 3px solid rgba(255,255,255,0.1);
-            border-top: 3px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Professional Header */
-        .professional-header {
-            background: rgba(11, 11, 15, 0.95);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--card-border);
-            padding: 1rem 2rem;
+        /* Header Styles */
+        .header {
+            background-color: var(--card-bg);
+            box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
             position: fixed;
             top: 0;
             width: 100%;
             z-index: 100;
+            padding: 0 16px;
         }
 
-        .header-content {
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             max-width: 1200px;
             margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            height: 56px;
         }
 
         .logo {
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--light);
         }
 
-        .logo-icon {
+        .logo-text {
+            font-size: 24px;
+            font-weight: bold;
             color: var(--primary);
-            font-size: 1.8rem;
+            margin-left: 8px;
         }
 
-        .nav-menu {
+        .search-bar {
+            background-color: var(--bg-color);
+            border-radius: 20px;
+            padding: 8px 12px;
             display: flex;
-            gap: 2rem;
             align-items: center;
+            width: 240px;
         }
 
-        .nav-link {
-            color: var(--muted);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
+        .search-bar input {
+            background: transparent;
+            border: none;
+            outline: none;
+            width: 100%;
+            margin-left: 8px;
         }
 
-        .nav-link:hover, .nav-link.active {
-            color: var(--light);
-            background: var(--card-bg);
+        .nav-icons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .nav-icon:hover {
+            background-color: var(--hover);
         }
 
         .user-menu {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 8px;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 18px;
+        }
+
+        .user-menu:hover {
+            background-color: var(--hover);
         }
 
         .user-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Main Layout */
+        .main-container {
+            display: flex;
+            max-width: 1200px;
+            margin: 72px auto 20px;
+            gap: 16px;
+        }
+
+        /* Left Sidebar */
+        .left-sidebar {
+            width: 280px;
+            position: sticky;
+            top: 72px;
+            height: calc(100vh - 92px);
+            overflow-y: auto;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 4px;
+        }
+
+        .sidebar-item:hover {
+            background-color: var(--hover);
+        }
+
+        .sidebar-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--bg-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            max-width: 680px;
+        }
+
+        .create-post {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            margin-bottom: 16px;
+        }
+
+        .post-input {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .post-avatar {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: var(--primary);
+            background-color: var(--primary);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 600;
             color: white;
+            font-weight: bold;
+        }
+
+        .post-text {
+            flex: 1;
+            background-color: var(--bg-color);
+            border-radius: 20px;
+            padding: 10px 16px;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-around;
+            padding-top: 8px;
+        }
+
+        .post-action {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            border-radius: 4px;
             cursor: pointer;
         }
 
-        /* Notifications */
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: var(--error);
-            color: white;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            font-size: 0.7rem;
+        .post-action:hover {
+            background-color: var(--hover);
+        }
+
+        /* Story Section */
+        .stories {
             display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            padding: 8px 0;
+        }
+
+        .story {
+            width: 120px;
+            height: 200px;
+            border-radius: 8px;
+            position: relative;
+            flex-shrink: 0;
+            cursor: pointer;
+            overflow: hidden;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .story-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid var(--primary);
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: var(--card-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .story-content {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(transparent, rgba(0,0,0,0.6));
+            display: flex;
+            align-items: flex-end;
+            padding: 12px;
+            color: white;
+            font-weight: 500;
+        }
+
+        .create-story {
+            background-color: var(--card-bg);
+            display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
         }
 
-        .notification-container {
-            position: relative;
+        .create-story-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-bottom: 8px;
         }
 
-        /* Main Container */
-        .main-container {
-            max-width: 1200px;
-            margin: 80px auto 0;
-            padding: 2rem;
-            min-height: calc(100vh - 80px);
+        /* Post */
+        .post {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            margin-bottom: 16px;
         }
 
-        /* Auth Pages */
-        .auth-container {
-            max-width: 400px;
-            margin: 2rem auto;
-            padding: 2rem;
+        .post-header {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
         }
 
-        .auth-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 2rem;
-            backdrop-filter: blur(10px);
+        .post-user {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .auth-title {
+        .post-user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .post-user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .post-user-name {
+            font-weight: 600;
+        }
+
+        .post-time {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .post-content {
+            padding: 0 16px 12px;
+        }
+
+        .post-text-content {
+            margin-bottom: 8px;
+        }
+
+        .post-image {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .post-stats {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 16px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .post-actions-row {
+            display: flex;
+            justify-content: space-around;
+            padding: 4px 0;
+        }
+
+        .post-action-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 0;
+            flex: 1;
+            justify-content: center;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .post-action-btn:hover {
+            background-color: var(--hover);
+        }
+
+        /* Right Sidebar */
+        .right-sidebar {
+            width: 320px;
+            position: sticky;
+            top: 72px;
+            height: calc(100vh - 92px);
+            overflow-y: auto;
+        }
+
+        .contacts-header {
+            display: flex;
+            justify-content: space-between;
+            padding: 16px 0 8px;
+        }
+
+        .contacts-title {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .contact {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .contact:hover {
+            background-color: var(--hover);
+        }
+
+        .contact-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .contact-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--success);
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            border: 2px solid var(--card-bg);
+        }
+
+        /* Login Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+            width: 432px;
+            max-width: 90%;
+            padding: 16px;
+        }
+
+        .modal-header {
             text-align: center;
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
         }
 
-        .auth-subtitle {
-            text-align: center;
-            color: var(--muted);
-            margin-bottom: 2rem;
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .modal-body {
+            padding: 16px 0;
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: var(--light);
-            font-weight: 500;
+            margin-bottom: 16px;
         }
 
         .form-input {
             width: 100%;
-            padding: 12px 16px;
-            background: rgba(255,255,255,0.08);
-            border: 1px solid var(--card-border);
-            border-radius: 8px;
-            color: var(--light);
-            font-size: 1rem;
-            transition: all 0.3s ease;
+            padding: 14px 16px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            font-size: 17px;
         }
 
         .form-input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(255, 45, 149, 0.1);
         }
 
         .btn {
-            padding: 12px 24px;
+            padding: 12px 16px;
+            border-radius: 6px;
             border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
+            font-size: 17px;
+            font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+            width: 100%;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: #111;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(255, 45, 149, 0.3);
-        }
-
-        .btn-secondary {
-            background: var(--card-bg);
-            color: var(--light);
-            border: 1px solid var(--card-border);
-        }
-
-        .btn-google {
-            background: white;
-            color: #333;
-            border: 1px solid #ddd;
-        }
-
-        .btn-google:hover {
-            background: #f8f9fa;
-            transform: translateY(-2px);
-        }
-
-        .btn-full {
-            width: 100%;
-        }
-
-        .auth-footer {
-            text-align: center;
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid var(--card-border);
-        }
-
-        .auth-link {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .auth-link:hover {
-            text-decoration: underline;
-        }
-
-        .divider {
-            text-align: center;
-            margin: 1.5rem 0;
-            color: var(--muted);
-            position: relative;
-        }
-
-        .divider::before {
-            content: "";
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: var(--card-border);
-        }
-
-        .divider-text {
-            background: var(--dark);
-            padding: 0 1rem;
-            position: relative;
-            display: inline-block;
-        }
-
-        /* Dashboard */
-        .dashboard {
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 2rem;
-            min-height: 600px;
-        }
-
-        .sidebar {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 1.5rem;
-        }
-
-        .sidebar-menu {
-            list-style: none;
-        }
-
-        .sidebar-item {
-            margin-bottom: 0.5rem;
-        }
-
-        .sidebar-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            color: var(--muted);
-            text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .sidebar-link:hover, .sidebar-link.active {
-            background: rgba(255,255,255,0.08);
-            color: var(--light);
-        }
-
-        .sidebar-icon {
-            font-size: 1.2rem;
-        }
-
-        .main-content {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 2rem;
-        }
-
-        .content-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-
-        .content-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--light);
-        }
-
-        /* Cards Grid */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 1.5rem;
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-label {
-            color: var(--muted);
-            font-size: 0.9rem;
-        }
-
-        /* Welcome Section */
-        .welcome-section {
-            background: linear-gradient(135deg, rgba(255,45,149,0.1), rgba(255,209,102,0.1));
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-
-        .welcome-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* Friends System */
-        .friends-section {
-            margin-top: 2rem;
-        }
-
-        .friend-request {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .friend-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .friend-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
+            background-color: var(--primary);
             color: white;
         }
 
-        .friend-actions {
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+            width: auto;
+            margin-top: 16px;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--secondary-dark);
+        }
+
+        .gender-selection {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .gender-option {
+            flex: 1;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .gender-option.selected {
+            border-color: var(--primary);
+            background-color: rgba(24, 119, 242, 0.1);
+        }
+
+        .intimacy-meter {
+            margin-top: 16px;
+            background-color: var(--bg-color);
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .intimacy-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .intimacy-bar {
+            height: 8px;
+            background-color: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .intimacy-progress {
+            height: 100%;
+            background-color: var(--primary);
+            width: 65%;
+        }
+
+        .partnership-badge {
+            display: inline-block;
+            background-color: var(--secondary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+
+        /* Profile Page */
+        .profile-header {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+
+        .profile-cover {
+            height: 350px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+        }
+
+        .profile-picture {
+            position: absolute;
+            bottom: -60px;
+            left: 20px;
+            width: 168px;
+            height: 168px;
+            border-radius: 50%;
+            border: 4px solid var(--card-bg);
+            background-color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 60px;
+            font-weight: bold;
+        }
+
+        .profile-info {
+            padding: 80px 20px 20px;
+        }
+
+        .profile-name {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .profile-friends {
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .profile-actions {
             display: flex;
             gap: 8px;
         }
 
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 0.8rem;
-        }
-
-        .btn-success {
-            background: var(--success);
-            color: white;
-        }
-
-        .btn-danger {
-            background: var(--error);
-            color: white;
-        }
-
-        /* Search Users */
-        .search-container {
-            margin-bottom: 1.5rem;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 12px 16px;
-            background: rgba(255,255,255,0.08);
-            border: 1px solid var(--card-border);
-            border-radius: 8px;
-            color: var(--light);
-            font-size: 1rem;
-        }
-
-        .user-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .user-item {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* Messages */
-        .alert {
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            border: 1px solid;
-        }
-
-        .alert-success {
-            background: rgba(0, 210, 106, 0.1);
-            border-color: var(--success);
-            color: var(--success);
-        }
-
-        .alert-error {
-            background: rgba(255, 107, 107, 0.1);
-            border-color: var(--error);
-            color: var(--error);
-        }
-
-        .alert-warning {
-            background: rgba(255, 209, 102, 0.1);
-            border-color: var(--warning);
-            color: var(--warning);
-        }
-
         /* Responsive */
-        @media (max-width: 768px) {
-            .dashboard {
-                grid-template-columns: 1fr;
-            }
-            
-            .professional-header {
-                padding: 1rem;
-            }
-            
-            .nav-menu {
+        @media (max-width: 1100px) {
+            .right-sidebar {
                 display: none;
             }
-            
-            .main-container {
-                padding: 1rem;
-                margin-top: 60px;
-            }
-            
-            .auth-container {
-                margin: 1rem auto;
-                padding: 1rem;
-            }
+        }
 
-            .content-header {
-                flex-direction: column;
-                gap: 1rem;
-                align-items: flex-start;
+        @media (max-width: 900px) {
+            .left-sidebar {
+                display: none;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Loading Screen -->
-    <div id="loadingScreen">
-        <div class="loader"></div>
-        <p>Loading LoveStory Platform...</p>
-    </div>
-
-    <!-- Professional Header -->
-    <header class="professional-header" id="mainHeader" style="display: none;">
-        <div class="header-content">
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
             <div class="logo">
-                <span class="logo-icon">❤️</span>
-                <span>LoveStory</span>
+                <div class="logo-icon">❤️</div>
+                <div class="logo-text">LoveStory</div>
             </div>
             
-            <nav class="nav-menu" id="mainNav">
-                <a href="#dashboard" class="nav-link active" data-page="dashboard">Dashboard</a>
-                <a href="#memories" class="nav-link" data-page="memories">Memories</a>
-                <a href="#gallery" class="nav-link" data-page="gallery">Gallery</a>
-                <a href="#goals" class="nav-link" data-page="goals">Goals</a>
-                <a href="#friends" class="nav-link" data-page="friends">Friends</a>
-                <a href="#chat" class="nav-link" data-page="chat">Messages</a>
-            </nav>
+            <div class="search-bar">
+                <span>🔍</span>
+                <input type="text" placeholder="Search LoveStory">
+            </div>
             
-            <div class="user-menu" id="userMenu">
-                <div class="notification-container">
-                    <div class="user-avatar" id="userAvatar">U</div>
-                    <div class="notification-badge" id="notificationBadge" style="display: none;">0</div>
-                </div>
-                <button class="btn btn-secondary" id="logoutBtn">Logout</button>
+            <div class="nav-icons">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-icon">👥</div>
+                <div class="nav-icon">📺</div>
+                <div class="nav-icon">🛒</div>
+            </div>
+            
+            <div class="user-menu">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <span id="userName">User</span>
             </div>
         </div>
     </header>
 
-    <!-- Main Content Area -->
-    <main class="main-container" id="mainContainer">
-        <!-- Auth Pages -->
-        <div id="authPages">
-            <!-- Login Page -->
-            <div class="auth-container" id="loginPage">
-                <div class="auth-card">
-                    <h1 class="auth-title">Welcome Back</h1>
-                    <p class="auth-subtitle">Sign in to your LoveStory account</p>
-                    
-                    <button class="btn btn-google btn-full" id="googleLoginBtn">
-                        <span>🚀 Continue with Google</span>
-                    </button>
-                    
-                    <div class="divider">
-                        <span class="divider-text">or continue with email</span>
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Left Sidebar -->
+        <div class="left-sidebar">
+            <div class="sidebar-item">
+                <div class="sidebar-icon">👤</div>
+                <span>My Profile</span>
+            </div>
+            <div class="sidebar-item">
+                <div class="sidebar-icon">👥</div>
+                <span>Friends</span>
+            </div>
+            <div class="sidebar-item">
+                <div class="sidebar-icon">📺</div>
+                <span>Watch</span>
+            </div>
+            <div class="sidebar-item">
+                <div class="sidebar-icon">🛒</div>
+                <span>Marketplace</span>
+            </div>
+            <div class="sidebar-item">
+                <div class="sidebar-icon">🎮</div>
+                <span>Games</span>
+            </div>
+            <div class="sidebar-item">
+                <div class="sidebar-icon">📅</div>
+                <span>Events</span>
+            </div>
+            <div class="sidebar-item">
+                <div class="sidebar-icon">💼</div>
+                <span>Jobs</span>
+            </div>
+            <div class="sidebar-item">
+                <div class="sidebar-icon">🌎</div>
+                <span>Climate Science</span>
+            </div>
+            <div class="sidebar-item">
+                <div class="sidebar-icon">🔄</div>
+                <span>See More</span>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Create Post -->
+            <div class="create-post">
+                <div class="post-input">
+                    <div class="post-avatar" id="postUserAvatar">U</div>
+                    <div class="post-text" id="createPostTrigger">What's on your mind, User?</div>
+                </div>
+                <div class="post-actions">
+                    <div class="post-action">
+                        <span>🎥</span>
+                        <span>Live Video</span>
                     </div>
-                    
-                    <form id="loginForm">
-                        <div class="form-group">
-                            <label class="form-label">Email Address</label>
-                            <input type="email" class="form-input" id="loginEmail" placeholder="your@email.com" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Password</label>
-                            <input type="password" class="form-input" id="loginPassword" placeholder="Enter your password" required>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-primary btn-full" id="loginBtn">
-                            Sign In
-                        </button>
-                    </form>
-                    
-                    <div class="auth-footer">
-                        <p>Don't have an account? <a href="#" class="auth-link" id="showRegister">Create one</a></p>
-                        <p><a href="#" class="auth-link" id="showForgotPassword">Forgot your password?</a></p>
+                    <div class="post-action">
+                        <span>🖼️</span>
+                        <span>Photo/Video</span>
+                    </div>
+                    <div class="post-action">
+                        <span>😊</span>
+                        <span>Feeling/Activity</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Register Page -->
-            <div class="auth-container" id="registerPage" style="display: none;">
-                <div class="auth-card">
-                    <h1 class="auth-title">Create Account</h1>
-                    <p class="auth-subtitle">Start your love story journey</p>
-                    
-                    <button class="btn btn-google btn-full" id="googleRegisterBtn">
-                        <span>🚀 Continue with Google</span>
-                    </button>
-                    
-                    <div class="divider">
-                        <span class="divider-text">or sign up with email</span>
+            <!-- Stories -->
+            <div class="stories">
+                <div class="story create-story">
+                    <div class="create-story-icon">+</div>
+                    <div class="story-content">Create Story</div>
+                </div>
+                <div class="story" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <div class="story-avatar">A</div>
+                    <div class="story-content">Alex Morgan</div>
+                </div>
+                <div class="story" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                    <div class="story-avatar">J</div>
+                    <div class="story-content">Jamie Smith</div>
+                </div>
+                <div class="story" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                    <div class="story-avatar">S</div>
+                    <div class="story-content">Sam Taylor</div>
+                </div>
+                <div class="story" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                    <div class="story-avatar">M</div>
+                    <div class="story-content">Morgan Lee</div>
+                </div>
+            </div>
+
+            <!-- Posts -->
+            <div class="post">
+                <div class="post-header">
+                    <div class="post-user">
+                        <div class="post-user-avatar">A</div>
+                        <div class="post-user-info">
+                            <div class="post-user-name">Alex Morgan <span class="partnership-badge">Best Friend</span></div>
+                            <div class="post-time">Yesterday at 3:45 PM</div>
+                        </div>
                     </div>
-                    
-                    <form id="registerForm">
-                        <div class="form-group">
-                            <label class="form-label">Your Name</label>
-                            <input type="text" class="form-input" id="registerName" placeholder="Enter your name" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Email Address</label>
-                            <input type="email" class="form-input" id="registerEmail" placeholder="your@email.com" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Password</label>
-                            <input type="password" class="form-input" id="registerPassword" placeholder="Create a password (min 6 characters)" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Partner's Name</label>
-                            <input type="text" class="form-input" id="registerPartnerName" placeholder="Enter your partner's name" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Our Special Date</label>
-                            <input type="date" class="form-input" id="registerSpecialDate" required>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-primary btn-full" id="registerBtn">
-                            Create Our Love Story
-                        </button>
-                    </form>
-                    
-                    <div class="auth-footer">
-                        <p>Already have an account? <a href="#" class="auth-link" id="showLogin">Sign in</a></p>
+                </div>
+                <div class="post-content">
+                    <div class="post-text-content">
+                        Just reached 100 intimacy points with Jamie! So excited to strengthen our connection! 💕
+                    </div>
+                </div>
+                <div class="post-stats">
+                    <div>👍 125</div>
+                    <div>42 comments · 5 shares</div>
+                </div>
+                <div class="post-actions-row">
+                    <div class="post-action-btn">
+                        <span>👍</span>
+                        <span>Like</span>
+                    </div>
+                    <div class="post-action-btn">
+                        <span>💬</span>
+                        <span>Comment</span>
+                    </div>
+                    <div class="post-action-btn">
+                        <span>↪️</span>
+                        <span>Share</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Forgot Password Page -->
-            <div class="auth-container" id="forgotPasswordPage" style="display: none;">
-                <div class="auth-card">
-                    <h1 class="auth-title">Reset Password</h1>
-                    <p class="auth-subtitle">Enter your email to receive a reset link</p>
-                    
-                    <form id="forgotPasswordForm">
-                        <div class="form-group">
-                            <label class="form-label">Email Address</label>
-                            <input type="email" class="form-input" id="resetEmail" placeholder="your@email.com" required>
+            <div class="post">
+                <div class="post-header">
+                    <div class="post-user">
+                        <div class="post-user-avatar">J</div>
+                        <div class="post-user-info">
+                            <div class="post-user-name">Jamie Smith <span class="partnership-badge">Lover</span></div>
+                            <div class="post-time">2 hrs ago</div>
                         </div>
-                        
-                        <button type="submit" class="btn btn-primary btn-full" id="resetPasswordBtn">
-                            Send Reset Link
-                        </button>
-                    </form>
-                    
-                    <div class="auth-footer">
-                        <p>Remember your password? <a href="#" class="auth-link" id="showLoginFromReset">Sign in</a></p>
+                    </div>
+                </div>
+                <div class="post-content">
+                    <div class="post-text-content">
+                        Celebrating 6 months with my amazing partner! Every moment with you is special. ❤️
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1518568814500-bf0f8d125f46?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" alt="Couple photo" class="post-image">
+                </div>
+                <div class="post-stats">
+                    <div>👍 342</div>
+                    <div>87 comments · 23 shares</div>
+                </div>
+                <div class="post-actions-row">
+                    <div class="post-action-btn">
+                        <span>👍</span>
+                        <span>Like</span>
+                    </div>
+                    <div class="post-action-btn">
+                        <span>💬</span>
+                        <span>Comment</span>
+                    </div>
+                    <div class="post-action-btn">
+                        <span>↪️</span>
+                        <span>Share</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- App Pages -->
-        <div id="appPages" style="display: none;">
-            <!-- Dashboard -->
-            <div class="dashboard">
-                <aside class="sidebar">
-                    <nav>
-                        <ul class="sidebar-menu">
-                            <li class="sidebar-item">
-                                <a href="#" class="sidebar-link active" data-page="dashboard">
-                                    <span class="sidebar-icon">📊</span>
-                                    Dashboard
-                                </a>
-                            </li>
-                            <li class="sidebar-item">
-                                <a href="#" class="sidebar-link" data-page="memories">
-                                    <span class="sidebar-icon">📝</span>
-                                    Memories
-                                </a>
-                            </li>
-                            <li class="sidebar-item">
-                                <a href="#" class="sidebar-link" data-page="gallery">
-                                    <span class="sidebar-icon">🖼️</span>
-                                    Gallery
-                                </a>
-                            </li>
-                            <li class="sidebar-item">
-                                <a href="#" class="sidebar-link" data-page="goals">
-                                    <span class="sidebar-icon">🎯</span>
-                                    Goals
-                                </a>
-                            </li>
-                            <li class="sidebar-item">
-                                <a href="#" class="sidebar-link" data-page="friends">
-                                    <span class="sidebar-icon">👥</span>
-                                    Friends
-                                    <span class="notification-badge" id="sidebarFriendRequests" style="display: none;"></span>
-                                </a>
-                            </li>
-                            <li class="sidebar-item">
-                                <a href="#" class="sidebar-link" data-page="chat">
-                                    <span class="sidebar-icon">💬</span>
-                                    Messages
-                                </a>
-                            </li>
-                            <li class="sidebar-item">
-                                <a href="#" class="sidebar-link" data-page="settings">
-                                    <span class="sidebar-icon">⚙️</span>
-                                    Settings
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
-                </aside>
-
-                <div class="main-content">
-                    <div class="content-header">
-                        <h1 class="content-title" id="contentTitle">Dashboard</h1>
-                        <div id="contentActions"></div>
-                    </div>
-
-                    <div id="contentArea">
-                        <!-- Dashboard Content -->
-                        <div class="page-content" id="dashboardPage">
-                            <div class="welcome-section">
-                                <h2 class="welcome-title" id="welcomeMessage">Welcome to LoveStory!</h2>
-                                <p>Start building your beautiful love story together</p>
-                            </div>
-
-                            <div class="cards-grid">
-                                <div class="stat-card">
-                                    <div class="stat-value" id="memoriesCount">0</div>
-                                    <div class="stat-label">Memories Created</div>
-                                </div>
-                                <div class="stat-card">
-                                    <div class="stat-value" id="photosCount">0</div>
-                                    <div class="stat-label">Photos Shared</div>
-                                </div>
-                                <div class="stat-card">
-                                    <div class="stat-value" id="friendsCount">0</div>
-                                    <div class="stat-label">Friends</div>
-                                </div>
-                                <div class="stat-card">
-                                    <div class="stat-value" id="loveScore">100%</div>
-                                    <div class="stat-label">Love Meter</div>
-                                </div>
-                            </div>
-
-                            <div class="quick-actions">
-                                <h3>Quick Actions</h3>
-                                <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;">
-                                    <button class="btn btn-primary" onclick="app.showAppPage('memories')">
-                                        ✨ Add Memory
-                                    </button>
-                                    <button class="btn btn-primary" onclick="app.showAppPage('gallery')">
-                                        🖼️ Upload Photo
-                                    </button>
-                                    <button class="btn btn-primary" onclick="app.showAppPage('friends')">
-                                        👥 Find Friends
-                                    </button>
-                                    <button class="btn btn-primary" onclick="app.showAppPage('chat')">
-                                        💬 Send Message
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Friends Page -->
-                        <div class="page-content" id="friendsPage" style="display: none;">
-                            <div class="content-header">
-                                <h1 class="content-title">Friends</h1>
-                                <button class="btn btn-primary" onclick="app.showFindFriends()">Find Friends</button>
-                            </div>
-
-                            <!-- Friend Requests Section -->
-                            <div class="friends-section" id="friendRequestsSection">
-                                <h3>Friend Requests</h3>
-                                <div id="friendRequestsList">
-                                    <!-- Friend requests will be loaded here -->
-                                </div>
-                            </div>
-
-                            <!-- My Friends Section -->
-                            <div class="friends-section">
-                                <h3>My Friends</h3>
-                                <div id="friendsList">
-                                    <!-- Friends list will be loaded here -->
-                                </div>
-                            </div>
-
-                            <!-- Find Friends Section -->
-                            <div class="friends-section" id="findFriendsSection" style="display: none;">
-                                <h3>Find Friends</h3>
-                                <div class="search-container">
-                                    <input type="text" class="search-input" id="friendSearch" placeholder="Search by name or email...">
-                                </div>
-                                <div id="searchResults">
-                                    <!-- Search results will appear here -->
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Other pages (Memories, Gallery, Goals, Chat, Settings) -->
-                        <div class="page-content" id="memoriesPage" style="display: none;">
-                            <div class="content-header">
-                                <h1 class="content-title">Memories</h1>
-                                <button class="btn btn-primary" id="addMemoryBtn">+ Add Memory</button>
-                            </div>
-                            <p>Your special moments will appear here.</p>
-                        </div>
-
-                        <div class="page-content" id="galleryPage" style="display: none;">
-                            <div class="content-header">
-                                <h1 class="content-title">Gallery</h1>
-                                <button class="btn btn-primary" id="uploadPhotoBtn">+ Upload Photo</button>
-                            </div>
-                            <p>Your photo gallery will appear here.</p>
-                        </div>
-
-                        <div class="page-content" id="goalsPage" style="display: none;">
-                            <div class="content-header">
-                                <h1 class="content-title">Goals</h1>
-                                <button class="btn btn-primary" id="addGoalBtn">+ Add Goal</button>
-                            </div>
-                            <p>Your relationship goals will appear here.</p>
-                        </div>
-
-                        <div class="page-content" id="chatPage" style="display: none;">
-                            <div class="content-header">
-                                <h1 class="content-title">Messages</h1>
-                                <button class="btn btn-primary" id="newMessageBtn">+ New Message</button>
-                            </div>
-                            <p>Your message center will appear here.</p>
-                        </div>
-
-                        <div class="page-content" id="settingsPage" style="display: none;">
-                            <h1 class="content-title">Settings</h1>
-                            <div class="settings-section">
-                                <h3>Profile Settings</h3>
-                                <p>Update your profile information, change password, and manage preferences.</p>
-                                <button class="btn btn-secondary" onclick="app.showAlert('Profile settings coming soon!', 'info')">
-                                    Edit Profile
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+        <!-- Right Sidebar -->
+        <div class="right-sidebar">
+            <div class="contacts-header">
+                <div class="contacts-title">Contacts</div>
+                <div>🔍 🏷️ ⋯</div>
+            </div>
+            
+            <div class="contact">
+                <div style="position: relative;">
+                    <div class="contact-avatar">A</div>
+                    <div class="contact-status"></div>
+                </div>
+                <span>Alex Morgan <span class="partnership-badge">Best Friend</span></span>
+            </div>
+            
+            <div class="contact">
+                <div style="position: relative;">
+                    <div class="contact-avatar">J</div>
+                    <div class="contact-status"></div>
+                </div>
+                <span>Jamie Smith <span class="partnership-badge">Lover</span></span>
+            </div>
+            
+            <div class="contact">
+                <div style="position: relative;">
+                    <div class="contact-avatar">S</div>
+                    <div class="contact-status"></div>
+                </div>
+                <span>Sam Taylor <span class="partnership-badge">Sister</span></span>
+            </div>
+            
+            <div class="contact">
+                <div style="position: relative;">
+                    <div class="contact-avatar">M</div>
+                    <div class="contact-status"></div>
+                </div>
+                <span>Morgan Lee <span class="partnership-badge">Brother</span></span>
+            </div>
+            
+            <div class="intimacy-meter">
+                <div class="intimacy-header">
+                    <span>Intimacy with Jamie</span>
+                    <span>65/100</span>
+                </div>
+                <div class="intimacy-bar">
+                    <div class="intimacy-progress"></div>
+                </div>
+                <div style="margin-top: 12px; text-align: center;">
+                    <button class="btn btn-secondary">Send Partnership Request</button>
                 </div>
             </div>
         </div>
-    </main>
+    </div>
 
-    <!-- Firebase Configuration -->
+    <!-- Login/Registration Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Create Your LoveStory Account</div>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" class="form-input" placeholder="Full Name" id="fullName">
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-input" placeholder="Email Address" id="email">
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-input" placeholder="Password" id="password">
+                </div>
+                <div class="form-group">
+                    <label>Select Gender (This cannot be changed later)</label>
+                    <div class="gender-selection">
+                        <div class="gender-option" data-gender="male">Male ♂️</div>
+                        <div class="gender-option" data-gender="female">Female ♀️</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>By creating an account, you agree to our Terms and confirm you will not post any nudity. Violations will result in permanent ban.</label>
+                </div>
+                <button class="btn btn-primary" id="registerBtn">Sign Up</button>
+                <div style="text-align: center; margin-top: 16px;">
+                    <a href="#" id="loginLink">Already have an account? Log in</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // 🔥 YOUR ACTUAL FIREBASE CONFIGURATION
-        const firebaseConfig = {
-            apiKey: "AIzaSyAse5Ut8C82mF-RBjm5xR-OA6sbrllJ-P0",
-            authDomain: "love-story-platform.firebaseapp.com",
-            projectId: "love-story-platform",
-            storageBucket: "love-story-platform.firebasestorage.app",
-            messagingSenderId: "302654946440",
-            appId: "1:302654946440:web:2392a462ade284cd0bb33d"
+        // DOM Elements
+        const loginModal = document.getElementById('loginModal');
+        const registerBtn = document.getElementById('registerBtn');
+        const loginLink = document.getElementById('loginLink');
+        const genderOptions = document.querySelectorAll('.gender-option');
+        const userAvatar = document.getElementById('userAvatar');
+        const postUserAvatar = document.getElementById('postUserAvatar');
+        const userName = document.getElementById('userName');
+        const createPostTrigger = document.getElementById('createPostTrigger');
+        
+        // Show modal on page load
+        window.onload = function() {
+            loginModal.style.display = 'flex';
         };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-        const storage = firebase.storage();
-    </script>
-
-    <!-- Application JavaScript -->
-    <script>
-        class LoveStoryApp {
-            constructor() {
-                this.currentUser = null;
-                this.userData = null;
-                this.friendRequests = [];
-                this.friends = [];
-                this.init();
+        
+        // Gender selection
+        let selectedGender = '';
+        genderOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                genderOptions.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedGender = this.getAttribute('data-gender');
+            });
+        });
+        
+        // Registration
+        registerBtn.addEventListener('click', function() {
+            const fullName = document.getElementById('fullName').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!fullName || !email || !password || !selectedGender) {
+                alert('Please fill in all fields and select your gender.');
+                return;
             }
-
-            init() {
-                this.setupEventListeners();
-                this.checkAuthState();
-            }
-
-            setupEventListeners() {
-                // Auth navigation
-                document.getElementById('showRegister').addEventListener('click', (e) => {
-                    e.preventDefault();
-                    this.showPage('registerPage');
-                });
-
-                document.getElementById('showLogin').addEventListener('click', (e) => {
-                    e.preventDefault();
-                    this.showPage('loginPage');
-                });
-
-                document.getElementById('showForgotPassword').addEventListener('click', (e) => {
-                    e.preventDefault();
-                    this.showPage('forgotPasswordPage');
-                });
-
-                document.getElementById('showLoginFromReset').addEventListener('click', (e) => {
-                    e.preventDefault();
-                    this.showPage('loginPage');
-                });
-
-                // Google Auth
-                document.getElementById('googleLoginBtn').addEventListener('click', () => this.handleGoogleLogin());
-                document.getElementById('googleRegisterBtn').addEventListener('click', () => this.handleGoogleLogin());
-
-                // Auth forms
-                document.getElementById('loginForm').addEventListener('submit', (e) => this.handleLogin(e));
-                document.getElementById('registerForm').addEventListener('submit', (e) => this.handleRegister(e));
-                document.getElementById('forgotPasswordForm').addEventListener('submit', (e) => this.handleForgotPassword(e));
-
-                // App navigation
-                document.getElementById('logoutBtn').addEventListener('click', () => this.handleLogout());
-                
-                // Sidebar navigation
-                document.querySelectorAll('.sidebar-link').forEach(link => {
-                    link.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        const page = e.currentTarget.dataset.page;
-                        this.showAppPage(page);
-                    });
-                });
-
-                // Friend search
-                document.getElementById('friendSearch')?.addEventListener('input', (e) => this.searchUsers(e.target.value));
-            }
-
-            async handleGoogleLogin() {
-                try {
-                    const provider = new firebase.auth.GoogleAuthProvider();
-                    provider.addScope('profile');
-                    provider.addScope('email');
-                    
-                    const result = await auth.signInWithPopup(provider);
-                    this.showSuccess('Welcome to LoveStory with Google! 🎉');
-                } catch (error) {
-                    this.showError('Google sign-in failed: ' + error.message);
-                }
-            }
-
-            checkAuthState() {
-                auth.onAuthStateChanged((user) => {
-                    if (user) {
-                        this.currentUser = user;
-                        this.loadUserData();
-                    } else {
-                        this.showAuthPage();
-                    }
-                    this.hideLoading();
-                });
-            }
-
-            async loadUserData() {
-                try {
-                    const userDoc = await db.collection('users').doc(this.currentUser.uid).get();
-                    if (userDoc.exists) {
-                        this.userData = userDoc.data();
-                        this.showApp();
-                        this.updateUI();
-                        this.loadFriendRequests();
-                        this.loadFriends();
-                    } else {
-                        await this.createUserDocument();
-                    }
-                } catch (error) {
-                    this.showError('Error loading user data: ' + error.message);
-                }
-            }
-
-            async createUserDocument() {
-                const userData = {
-                    email: this.currentUser.email,
-                    name: this.currentUser.displayName || 'User',
-                    photoURL: this.currentUser.photoURL || null,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-                };
-
-                await db.collection('users').doc(this.currentUser.uid).set(userData);
-                this.userData = userData;
-                this.showApp();
-            }
-
-            async handleLogin(e) {
-                e.preventDefault();
-                const email = document.getElementById('loginEmail').value;
-                const password = document.getElementById('loginPassword').value;
-
-                try {
-                    await auth.signInWithEmailAndPassword(email, password);
-                    this.showSuccess('Welcome back to LoveStory! 💖');
-                } catch (error) {
-                    this.showError(this.getAuthErrorMessage(error.code));
-                }
-            }
-
-            async handleRegister(e) {
-                e.preventDefault();
-                const email = document.getElementById('registerEmail').value;
-                const password = document.getElementById('registerPassword').value;
-                const name = document.getElementById('registerName').value;
-                const partnerName = document.getElementById('registerPartnerName').value;
-                const specialDate = document.getElementById('registerSpecialDate').value;
-
-                if (password.length < 6) {
-                    this.showError('Password must be at least 6 characters long');
-                    return;
-                }
-
-                if (!name || !partnerName || !specialDate) {
-                    this.showError('Please fill in all fields');
-                    return;
-                }
-
-                try {
-                    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                    await userCredential.user.updateProfile({ displayName: name });
-
-                    await db.collection('users').doc(userCredential.user.uid).set({
-                        email: email,
-                        name: name,
-                        partnerName: partnerName,
-                        specialDate: specialDate,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                        lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
-                        loveScore: 100
-                    });
-
-                    this.showSuccess('Welcome to LoveStory! Your love journey begins now 💫');
-                } catch (error) {
-                    this.showError(this.getAuthErrorMessage(error.code));
-                }
-            }
-
-            async handleForgotPassword(e) {
-                e.preventDefault();
-                const email = document.getElementById('resetEmail').value;
-
-                try {
-                    await auth.sendPasswordResetEmail(email);
-                    this.showSuccess('Password reset email sent! Check your inbox.');
-                    setTimeout(() => this.showPage('loginPage'), 2000);
-                } catch (error) {
-                    this.showError(this.getAuthErrorMessage(error.code));
-                }
-            }
-
-            async handleLogout() {
-                try {
-                    await auth.signOut();
-                    this.showSuccess('Logged out successfully. Come back soon! 💖');
-                } catch (error) {
-                    this.showError('Error logging out: ' + error.message);
-                }
-            }
-
-            // Friend System Methods
-            async loadFriendRequests() {
-                try {
-                    const requestsSnapshot = await db.collection('friendRequests')
-                        .where('toUserId', '==', this.currentUser.uid)
-                        .where('status', '==', 'pending')
-                        .get();
-
-                    this.friendRequests = [];
-                    requestsSnapshot.forEach(doc => {
-                        this.friendRequests.push({ id: doc.id, ...doc.data() });
-                    });
-
-                    this.updateFriendRequestsUI();
-                } catch (error) {
-                    console.error('Error loading friend requests:', error);
-                }
-            }
-
-            async loadFriends() {
-                try {
-                    // This would require a more complex query in a real app
-                    // For demo, we'll simulate having friends
-                    this.friends = [];
-                    this.updateFriendsUI();
-                } catch (error) {
-                    console.error('Error loading friends:', error);
-                }
-            }
-
-            async sendFriendRequest(toUserId) {
-                try {
-                    const requestData = {
-                        fromUserId: this.currentUser.uid,
-                        fromUserName: this.userData.name,
-                        toUserId: toUserId,
-                        status: 'pending',
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    };
-
-                    await db.collection('friendRequests').add(requestData);
-                    this.showSuccess('Friend request sent!');
-                } catch (error) {
-                    this.showError('Error sending friend request: ' + error.message);
-                }
-            }
-
-            async acceptFriendRequest(requestId) {
-                try {
-                    // Update request status
-                    await db.collection('friendRequests').doc(requestId).update({
-                        status: 'accepted',
-                        acceptedAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-
-                    // Reload requests
-                    await this.loadFriendRequests();
-                    this.showSuccess('Friend request accepted!');
-                } catch (error) {
-                    this.showError('Error accepting friend request: ' + error.message);
-                }
-            }
-
-            async rejectFriendRequest(requestId) {
-                try {
-                    await db.collection('friendRequests').doc(requestId).update({
-                        status: 'rejected'
-                    });
-
-                    await this.loadFriendRequests();
-                    this.showSuccess('Friend request rejected');
-                } catch (error) {
-                    this.showError('Error rejecting friend request: ' + error.message);
-                }
-            }
-
-            async searchUsers(query) {
-                if (query.length < 2) {
-                    document.getElementById('searchResults').innerHTML = '';
-                    return;
-                }
-
-                try {
-                    const usersSnapshot = await db.collection('users')
-                        .where('name', '>=', query)
-                        .where('name', '<=', query + '\uf8ff')
-                        .limit(10)
-                        .get();
-
-                    const results = [];
-                    usersSnapshot.forEach(doc => {
-                        if (doc.id !== this.currentUser.uid) {
-                            results.push({ id: doc.id, ...doc.data() });
-                        }
-                    });
-
-                    this.displaySearchResults(results);
-                } catch (error) {
-                    console.error('Error searching users:', error);
-                }
-            }
-
-            displaySearchResults(users) {
-                const container = document.getElementById('searchResults');
-                container.innerHTML = '';
-
-                if (users.length === 0) {
-                    container.innerHTML = '<p>No users found</p>';
-                    return;
-                }
-
-                users.forEach(user => {
-                    const userElement = document.createElement('div');
-                    userElement.className = 'user-item';
-                    userElement.innerHTML = `
-                        <div class="friend-info">
-                            <div class="friend-avatar">${user.name.charAt(0).toUpperCase()}</div>
-                            <div>
-                                <strong>${user.name}</strong>
-                                <div style="font-size: 0.8rem; color: var(--muted);">${user.email}</div>
-                            </div>
-                        </div>
-                        <button class="btn btn-primary btn-sm" onclick="app.sendFriendRequest('${user.id}')">
-                            Add Friend
-                        </button>
-                    `;
-                    container.appendChild(userElement);
-                });
-            }
-
-            updateFriendRequestsUI() {
-                const container = document.getElementById('friendRequestsList');
-                const badge = document.getElementById('notificationBadge');
-                const sidebarBadge = document.getElementById('sidebarFriendRequests');
-
-                if (this.friendRequests.length === 0) {
-                    container.innerHTML = '<p>No pending friend requests</p>';
-                    badge.style.display = 'none';
-                    sidebarBadge.style.display = 'none';
-                    return;
-                }
-
-                badge.textContent = this.friendRequests.length;
-                badge.style.display = 'flex';
-                sidebarBadge.textContent = this.friendRequests.length;
-                sidebarBadge.style.display = 'flex';
-
-                container.innerHTML = '';
-                this.friendRequests.forEach(request => {
-                    const requestElement = document.createElement('div');
-                    requestElement.className = 'friend-request';
-                    requestElement.innerHTML = `
-                        <div class="friend-info">
-                            <div class="friend-avatar">${request.fromUserName.charAt(0).toUpperCase()}</div>
-                            <div>
-                                <strong>${request.fromUserName}</strong>
-                                <div style="font-size: 0.8rem; color: var(--muted);">Wants to be your friend</div>
-                            </div>
-                        </div>
-                        <div class="friend-actions">
-                            <button class="btn btn-success btn-sm" onclick="app.acceptFriendRequest('${request.id}')">
-                                Accept
-                            </button>
-                            <button class="btn btn-danger btn-sm" onclick="app.rejectFriendRequest('${request.id}')">
-                                Reject
-                            </button>
-                        </div>
-                    `;
-                    container.appendChild(requestElement);
-                });
-            }
-
-            updateFriendsUI() {
-                const container = document.getElementById('friendsList');
-                document.getElementById('friendsCount').textContent = this.friends.length;
-
-                if (this.friends.length === 0) {
-                    container.innerHTML = '<p>No friends yet. Start by finding friends!</p>';
-                    return;
-                }
-
-                // In a real app, you would display actual friends here
-                container.innerHTML = '<p>Your friends will appear here. Use "Find Friends" to connect with other couples!</p>';
-            }
-
-            showFindFriends() {
-                document.getElementById('friendRequestsSection').style.display = 'none';
-                document.getElementById('findFriendsSection').style.display = 'block';
-                document.getElementById('friendSearch').focus();
-            }
-
-            // UI Methods
-            showPage(pageId) {
-                document.querySelectorAll('.auth-container').forEach(page => {
-                    page.style.display = 'none';
-                });
-                document.getElementById(pageId).style.display = 'block';
-            }
-
-            showAuthPage() {
-                document.getElementById('authPages').style.display = 'block';
-                document.getElementById('appPages').style.display = 'none';
-                document.getElementById('mainHeader').style.display = 'none';
-                this.showPage('loginPage');
-            }
-
-            showApp() {
-                document.getElementById('authPages').style.display = 'none';
-                document.getElementById('appPages').style.display = 'block';
-                document.getElementById('mainHeader').style.display = 'block';
-            }
-
-            showAppPage(pageId) {
-                document.querySelectorAll('.sidebar-link').forEach(link => {
-                    link.classList.remove('active');
-                });
-                document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
-
-                document.querySelectorAll('.nav-link').forEach(link => {
-                    link.classList.remove('active');
-                });
-                document.querySelector(`.nav-link[data-page="${pageId}"]`).classList.add('active');
-
-                const titles = {
-                    dashboard: 'Dashboard',
-                    memories: 'Memories',
-                    gallery: 'Gallery',
-                    goals: 'Goals',
-                    friends: 'Friends',
-                    chat: 'Messages',
-                    settings: 'Settings'
-                };
-                document.getElementById('contentTitle').textContent = titles[pageId];
-
-                document.querySelectorAll('.page-content').forEach(page => {
-                    page.style.display = 'none';
-                });
-                document.getElementById(pageId + 'Page').style.display = 'block';
-
-                // Reset friends view when leaving friends page
-                if (pageId !== 'friends') {
-                    document.getElementById('friendRequestsSection').style.display = 'block';
-                    document.getElementById('findFriendsSection').style.display = 'none';
-                }
-            }
-
-            updateUI() {
-                if (this.userData && this.userData.name) {
-                    const firstLetter = this.userData.name.charAt(0).toUpperCase();
-                    document.getElementById('userAvatar').textContent = firstLetter;
-                    document.getElementById('welcomeMessage').textContent = `Welcome back, ${this.userData.name}!`;
-                }
-
-                // Update stats
-                document.getElementById('memoriesCount').textContent = '0';
-                document.getElementById('photosCount').textContent = '0';
-                document.getElementById('friendsCount').textContent = this.friends.length;
-                document.getElementById('loveScore').textContent = '100%';
-            }
-
-            hideLoading() {
-                document.getElementById('loadingScreen').style.display = 'none';
-            }
-
-            getAuthErrorMessage(errorCode) {
-                const messages = {
-                    'auth/invalid-email': 'Please enter a valid email address',
-                    'auth/user-disabled': 'This account has been disabled',
-                    'auth/user-not-found': 'No account found with this email',
-                    'auth/wrong-password': 'Incorrect password',
-                    'auth/email-already-in-use': 'An account with this email already exists',
-                    'auth/weak-password': 'Password should be at least 6 characters',
-                    'auth/network-request-failed': 'Network error. Please check your connection.',
-                    'auth/too-many-requests': 'Too many attempts. Please try again later.',
-                    'auth/popup-closed-by-user': 'Sign-in was cancelled',
-                    'auth/popup-blocked': 'Sign-in popup was blocked. Please allow popups for this site.'
-                };
-                return messages[errorCode] || 'An error occurred. Please try again.';
-            }
-
-            showSuccess(message) {
-                this.showAlert(message, 'success');
-            }
-
-            showError(message) {
-                this.showAlert(message, 'error');
-            }
-
-            showAlert(message, type) {
-                document.querySelectorAll('.alert').forEach(alert => alert.remove());
-
-                const alert = document.createElement('div');
-                alert.className = `alert alert-${type}`;
-                alert.textContent = message;
-                alert.style.margin = '1rem 0';
-
-                const container = document.querySelector('.main-container');
-                container.insertBefore(alert, container.firstChild);
-
-                setTimeout(() => {
-                    if (alert.parentNode) {
-                        alert.remove();
-                    }
-                }, 5000);
-            }
-        }
-
-        // Initialize the application
-        const app = new LoveStoryApp();
-        window.app = app;
+            
+            // In a real app, you would send this data to your backend
+            // For demo purposes, we'll just simulate registration
+            
+            // Update UI with user info
+            userAvatar.textContent = fullName.charAt(0).toUpperCase();
+            postUserAvatar.textContent = fullName.charAt(0).toUpperCase();
+            userName.textContent = fullName;
+            
+            // Add gender symbol
+            const genderSymbol = selectedGender === 'male' ? ' ♂️' : ' ♀️';
+            userName.textContent += genderSymbol;
+            
+            // Close modal
+            loginModal.style.display = 'none';
+            
+            // Show success message
+            alert(`Welcome to LoveStory, ${fullName}! Your gender is set as ${selectedGender} and cannot be changed. Remember: No nudity allowed!`);
+        });
+        
+        // Login link
+        loginLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('In a real application, this would open the login form.');
+        });
+        
+        // Create post trigger
+        createPostTrigger.addEventListener('click', function() {
+            alert('In a real application, this would open the post creation modal with options to upload images, add stories, etc.');
+        });
     </script>
 </body>
 </html>
